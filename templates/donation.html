@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{%block content%}
+<div class="content-section justify-content-center">
+    <div class="container">
+        <h1 id="exp">Amount of donated money:</h1>
+        <h1 id="donate">{{x}}</h1>
+        <h1 id="exp">Turkish Liras</h1>
+    </div>
+    <div class="container">     
+        The number of animal-loving people facing economic difficulties is substantially high. Beside that, thousands of stray animals
+        facing lack of food,love,habitat etc. We have donation campaign to give financial aid to people and provide foods and habitats
+        for stray animal. Come on and join!
+    </div>
+</div>
+<div class="content-section">
+    {%if user_validation%}
+        <form method="POST" action="">
+            {{form.hidden_tag()}}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">You can support stray animals by donating</legend>
+                <div class="form-group">
+                    {{form.amount.label(class = "form-control-label")}}
+                        {% if form.amount.errors %}
+                            {{ form.amount(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.amount.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.amount(class="form-control form-control-lg") }}
+                        {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{form.submit(class = "btn btn-outline-info")}}
+            </div>
+        </form>
+    {%else%}
+        <span> Please <a href="{{url_for('login_page')}}">log in </a> to donate.</span>
+    {%endif%}
+</div>
+{%endblock%}

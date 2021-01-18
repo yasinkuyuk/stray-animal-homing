@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{%block content%}
+<button class = "btn btn-primary"><a id="linkButton" href="{{url_for('profile_page')}}#advertisement">Create an Advertisement</a></button>
+<div class = "content-section">
+    <div>
+        <form method="POST" action="">
+            {{form.hidden_tag()}}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">You can support stray animals by donating</legend>
+                <div class="row">
+                    <div class="col-lg-10">
+                        <div class="form-group">
+                            {{form.breed.label(class = "form-control-label")}}
+                                {% if form.breed.errors %}
+                                    {{ form.breed(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.breed.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.breed(class="form-control form-control-lg") }}
+                                {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-lg2">
+                        <div class="form-group mt-5">
+                            {{form.submit(class = "btn btn-outline-info")}}
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <table class="table table-hover">
+        <tr>
+            <th>Age</th>
+            <th>Breed</th>
+            <th>Health</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Availability</th>
+        </tr>
+    {%for ad in ads%}
+            <tr>
+                <td>{{ad.age}}</td>
+                <td>{{ad.breed}}</td>
+                <td>{{ad.health}}</td>
+                <td><a href="/user#{{ad.username[0][0]}}">{{ad.username[0][0]}}</a></td>
+                <td>{{ad.ad_date}}</td>
+                {%if ad.availability%}<td>Active</td>
+                {%else%}<td>Expired</td>{%endif%}
+            </tr>
+    {%endfor%}
+    </table>
+</div>
+{%endblock%}

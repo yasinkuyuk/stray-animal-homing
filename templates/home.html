@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{%block content%}
+<diV class="row">
+    <div class="col-lg-6">
+        <div class="content-section">
+            <h1>Stray Animal Difficulties</h1>
+            <p>In recent years, there is a big increase in homing pet animals. It’s getting more popular in societies. Although it is really good motivation for our little friends in essence,  there are inexcusable problems such as becoming an industry triggered by animal sales. Our little friends have been selling for big prices as belongings, personal items, objects. This situation occurs uncontrollable animal breeding by MERCHANTS. While all this have been happening, there are too much stray, ownerless animals living in extremely bad life situations. They cannot take the love, the feed etc. they  need. </p>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="content-section">
+            <h1>What We Serve?</h1>
+            <p>The “Re-homing the Stray Animals” project, brings in together stray animals and owners for free. It is important that there are NO SALES in this project. Animal lovers could easily re-home the needy strap animals with respect to their living area such as city, district. </p>
+            {%if not user_validation%}
+                <p>Why are you still waiting. <a href="{{url_for('register_page')}}">Register</a> and become our stray animal lovers family's member. </p>
+            {%endif%} 
+        </div>
+    </div>
+</diV>
+
+{%endblock%}

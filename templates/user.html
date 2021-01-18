@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{%block content%}
+<div class="content-section">
+    <table class="table table-hover">
+        <tr>
+            <th>Username</th>
+            <th>City</th>
+            <th>District</th>
+            <th>Phone Number</th>
+            <th>User Type</th>
+            <th>User Point</th>
+        </tr>
+        {%for user in users%}
+        <tr>
+            <td id="{{user.username}}">{{user.username}}</td>
+            <td>{{user.city}}</td>
+            <td>{{user.district}}</td>
+            <td>{%if user_validation%} {{user.phoneNumber}}{%else%} Please <a href="{{url_for('login_page')}}">log in</a> for view the phone numbers {%endif%}</td>
+            <td>{{user.userType}}</td>
+            <td>{{user.reliability}}</td>
+            <td>
+                <button type="button" class="btn btn-primary justify-content" data-toggle="modal" data-target="#voteModal">Vote</button>
+                <div class="modal fade" id="voteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Vote Users</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                            {%if user_validation%}
+                            <form method="POST" action="">
+                                {{form.hidden_tag()}}
+                                <fieldset class="form-group">
+                                    <legend class="border-bottom mb-4">You can support stray animals by donating</legend>
+                                    <div class="form-group">
+                                        {{form.username.label(class = "form-control-label")}}
+                                            {% if form.username.errors %}
+                                                {{ form.username(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.username.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.username(class="form-control form-control-lg") }}
+                                            {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        {{form.vote.label(class = "form-control-label")}}
+                                            {% if form.vote.errors %}
+                                                {{ form.vote(class="form-control form-control-lg is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.vote.errors %}
+                                                        <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                {{ form.vote(class="form-control form-control-lg") }}
+                                            {% endif %}
+                                    </div>
+                                </fieldset>
+                                <div class="form-group">
+                                    {{form.submit(class = "btn btn-outline-info")}}
+                                </div>
+                            </form>
+                            {%else%}
+                                <span>Please <a href="{{url_for('login_page')}}">log in</a> to vote users.</span>
+                            {%endif%}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </td>
+        </tr>    
+        {%endfor%}
+    </table>
+</div>
+{%endblock%}
