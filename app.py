@@ -48,6 +48,18 @@ def donation_page():
         return redirect(url_for('donation_page'))
     return render_template("donation.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username,form=form,x=x)
 
+@app.route("/ad",methods=["GET","POST"])
+def ad_page():
+    form = SearchAdvertisementForm()
+    ads = db.getAllAdvertisement()
+    ads = db.getActiveAdvertisement(ads)
+    if form.validate_on_submit():
+        breed = form.breed.data
+        ads = db.getAdvertisementByBreed(breed)
+        return render_template("ad.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username, ads=ads,form = form)
+
+    return render_template("ad.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username, ads=ads,form = form)
+
 @app.route("/register",methods=["GET","POST"])
 def register_page():
     form = RegistationForm()
