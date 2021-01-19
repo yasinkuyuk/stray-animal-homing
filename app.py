@@ -1,34 +1,24 @@
+from database import Database
 from flask import Flask, render_template,flash,redirect,url_for,current_app
 from datetime import datetime
 from forms import RegistationForm, LoginForm, AdvertisementForm, hashPassword, updateUserInformation, VoteForm, DonationForm, SearchAdvertisementForm,Homing
-from server import db
 from classes import User,Animal,Donate
 
+POSTGRESQL_URI = "postgres://xvkkgnpe:EMnqE0mIThM4GFRail4rkLJF0tKRXUAT@rogue.db.elephantsql.com:5432/xvkkgnpe"
+db = Database(POSTGRESQL_URI)
+current_user = User("","")
 
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "b2e0242696bacbe7cf12d8a4b739b021"
+app.config["db"] = db
+app.config["isValidUser"] = False
+app.config["current_user"] = current_user
+
+@app.route("/")
 def home_page():
     return render_template("home.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username)
 
-def ad_page():
-    form = SearchAdvertisementForm()
-    ads = db.getAllAdvertisement()
-    ads = db.getActiveAdvertisement(ads)
-    if form.validate_on_submit():
-        breed = form.breed.data
-        ads = db.getAdvertisementByBreed(breed)
-        return render_template("ad.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username, ads=ads,form = form)
-
-    return render_template("ad.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username, ads=ads,form = form)
-
-def donation_page():
-    form = DonationForm()
-    x = db.getTotalDonation()
-    if form.validate_on_submit():
-        flash(f"Thank you for donating {form.amount.data} Turkish Liras",'success')
-        donation_form = Donate(amount=form.amount.data, username=current_app.config["current_user"].username)
-        db.createDonation(donation_form)
-        return redirect(url_for('donation_page'))
-    return render_template("donation.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username,form=form,x=x)
-
+@app.route("/user", methods=["GET","POST"])
 def user_page():
     voteform = VoteForm()
     users = db.getAlluser()
@@ -47,6 +37,18 @@ def user_page():
 
     return render_template("user.html",user_validation = current_app.config["isValidUser"] , username = current_app.config["current_user"].username, users=users,form =voteform)
 
+@app.route("/donation", methods=["GET","POST"])
+def donation_page():
+    form = DonationForm()
+    x = db.getTotalDonation()
+    if form.validate_on_submit():
+        flash(f"Thank you for donating {form.amount.data} Turkish Liras",'success')
+        donation_form = Donate(amount=form.amount.data, username=current_app.config["current_user"].username)
+        db.createDonation(donation_form)
+        return redirect(url_for('donation_page'))
+    return render_template("donation.html",user_validation=current_app.config["isValidUser"],username = current_app.config["current_user"].username,form=form,x=x)
+
+@app.route("/register",methods=["GET","POST"])
 def register_page():
     form = RegistationForm()
     if form.validate_on_submit():
@@ -62,6 +64,7 @@ def register_page():
             return redirect(url_for("register_page"))
     return render_template("register.html", title = "Register", form = form)
 
+@app.route("/login",methods = ["GET","POST"])
 def login_page():
     form = LoginForm()
     if form.validate_on_submit():
@@ -79,6 +82,14 @@ def login_page():
 
     return render_template("login.html", title = "Login", form=form)
 
+@app.route("/logout")
+def logout_page():
+    user=User(username="",password="")
+    current_app.config["current_user"]=user
+    current_app.config["isValidUser"] = False
+    return redirect(url_for("home_page"))
+
+@app.route("/myProfile",methods=["GET", "POST"])
 def profile_page():
     adForm = AdvertisementForm()
     upForm = updateUserInformation()
@@ -142,12 +153,7 @@ def profile_page():
         flash(f'Please log in to use this feature')
         return redirect(url_for("login_page"))
 
-def logout_page():
-    user=User(username="",password="")
-    current_app.config["current_user"]=user
-    current_app.config["isValidUser"] = False
-    return redirect(url_for("home_page"))
-
+@app.route("/del",methods=["GET","POST"])
 def delete_user():
     db.deleteUser( current_app.config["current_user"].username )
     user=User(username="",password="")
@@ -155,5 +161,8 @@ def delete_user():
     current_app.config["current_user"]=user
     current_app.config["isValidUser"] = False
     return redirect(url_for("home_page"))
-    
+   
 
+
+if __name__ == "__main__":
+    app.run(host = "0.0.0.0", port =8080, debug=True)
